@@ -38,23 +38,24 @@ if __name__ == "__main__":
                 st.session_state.tl.randomize(single)
 
     with dance:
-        if st.button("Start/Stop"):
-            st.session_state.aud.toggle()
-        st.text(st.session_state.aud.BPM_EST)
-        placeholder = st.empty()
-        with st.form(key = 'Audio Values'):
-            NORMALIZE  = st.toggle('Normalize')
-            REDUCTION_VAL = st.number_input("Smoothing On Plot",min_value = 0, max_value = 10, step = 1, value = 0)
-            TRIM = st.number_input("Values to Display" ,min_value = 50, max_value = 1000, step = 50, value = 500)
-            BEAT_THRESHOLD = st.number_input("Beat Detection Sensitivity" ,min_value = 0.0, max_value = 15.0, step = 0.1, value = 5.0)
+        st.write("disabled")
+        # if st.button("Start/Stop"):
+        #     st.session_state.aud.toggle()
+        # st.text(st.session_state.aud.BPM_EST)
+        # placeholder = st.empty()
+        # with st.form(key = 'Audio Values'):
+        #     NORMALIZE  = st.toggle('Normalize')
+        #     REDUCTION_VAL = st.number_input("Smoothing On Plot",min_value = 0, max_value = 10, step = 1, value = 0)
+        #     TRIM = st.number_input("Values to Display" ,min_value = 50, max_value = 1000, step = 50, value = 500)
+        #     BEAT_THRESHOLD = st.number_input("Beat Detection Sensitivity" ,min_value = 0.0, max_value = 15.0, step = 0.1, value = 5.0)
 
-            if st.form_submit_button('Apply'):
-                st.session_state.aud.NORMALIZE = NORMALIZE
-                st.session_state.aud.REDUCTION_VAL = REDUCTION_VAL
-                st.session_state.aud.TRIM = TRIM
-                st.session_state.aud.BEAT_THRESHOLD = BEAT_THRESHOLD
+        #     if st.form_submit_button('Apply'):
+        #         st.session_state.aud.NORMALIZE = NORMALIZE
+        #         st.session_state.aud.REDUCTION_VAL = REDUCTION_VAL
+        #         st.session_state.aud.TRIM = TRIM
+        #         st.session_state.aud.BEAT_THRESHOLD = BEAT_THRESHOLD
 
-        st.session_state.aud.main(placeholder)
+        # st.session_state.aud.main(placeholder)
 
 
     light_box = st.container()    
