@@ -1,6 +1,17 @@
 from light import TrafficLight
 # from dance_simple import LiveAudioVisualizer
 import streamlit as st
+import RPi.GPIO as GPIO
+
+import atexit
+
+# Define the cleanup function
+def cleanup():
+    print("Cleaning up GPIO resources...")
+    GPIO.cleanup()  # This will reset the GPIO pins
+
+# Register the cleanup function with atexit
+atexit.register(cleanup)
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
