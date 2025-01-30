@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 if not st.session_state.get('tl'):
-    st.session_state.tl = TrafficLight(red_pin=17, yellow_pin=27, green_pin=22)
+    st.session_state.tl = TrafficLight(red_pin=26, yellow_pin=20, green_pin=21)
 
 # if not st.session_state.get('aud'):
 #     st.session_state.aud = LiveAudioVisualizer()
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     light_box = st.container()    
     if st.button("Reset"):
-        st.session_state.tl = TrafficLight(red_pin=17, yellow_pin=27, green_pin=22)
+        st.session_state.tl = TrafficLight(red_pin=26, yellow_pin=20, green_pin=21)
     
     with light_box:
         st.image(st.session_state.tl.virtual_light())
