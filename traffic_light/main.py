@@ -1,5 +1,5 @@
 from light import TrafficLight
-from dance_simple import LiveAudioVisualizer
+# from dance_simple import LiveAudioVisualizer
 import streamlit as st
 
 st.set_page_config(
