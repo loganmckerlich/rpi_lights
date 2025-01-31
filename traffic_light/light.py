@@ -88,7 +88,6 @@ class TrafficLight():
         self.green_off()
         self.red_off()
         self.yellow_off()
-        print("cleanup")
 
     def virtual_light(self):
         width, height = 200, 400

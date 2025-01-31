@@ -5,10 +5,15 @@ import RPi.GPIO as GPIO
 
 import atexit
 
-# Define the cleanup function
+_cleanup_done = False
+
 def cleanup():
-    print("Cleaning up GPIO resources...")
-    GPIO.cleanup()  # This will reset the GPIO pins
+    global _cleanup_done
+    if not _cleanup_done:
+        print("Cleaning up GPIO resources...")
+        GPIO.cleanup()
+        _cleanup_done = True  # Mark cleanup as done
+
 
 # Register the cleanup function with atexit
 atexit.register(cleanup)
