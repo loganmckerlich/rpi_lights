@@ -103,25 +103,22 @@ class TrafficLight():
         if self.strobe_running:
             return
         self.strobe_running = True
-        self.strobe_thread = threading.Thread(target=self._strobe_loop, daemon=True)
-        self.strobe_thread.start()
+        for color in self.strobe_lights:
+            if self.strobe_lights[color]:
+                self.strobe_threads[color] = threading.Thread(target=self._strobe_light, args=(color,), daemon=True)
+                self.strobe_threads[color].start()
     
     def stop_strobe(self):
         self.strobe_running = False
-        if self.strobe_thread:
-            self.strobe_thread.join()
+        for color in self.strobe_threads:
+            if self.strobe_threads[color]:
+                self.strobe_threads[color].join()
+                self.strobe_threads[color] = None
 
-    def _strobe_loop(self):
-        while self.strobe_running:
-            if self.strobe_sync:
-                state = GPIO.LOW if random.choice([True, False]) else GPIO.HIGH
-                for color in self.strobe_lights:
-                    if self.strobe_lights[color]:
-                        GPIO.output(getattr(self, f"{color}_pin"), state)
-            else:
-                for color in self.strobe_lights:
-                    if self.strobe_lights[color]:
-                        GPIO.output(getattr(self, f"{color}_pin"), GPIO.LOW if random.choice([True, False]) else GPIO.HIGH)
+    def _strobe_light(self, color):
+        pin = getattr(self, f"{color}_pin")
+        while self.strobe_running and self.strobe_lights[color]:
+            GPIO.output(pin, GPIO.LOW if random.choice([True, False]) else GPIO.HIGH)
             time.sleep(self.strobe_rate)
 
     def virtual_light(self):
