@@ -24,12 +24,12 @@ class TrafficLight():
         # Turn all lights off initially
         self.all_off()
         
-        # Strobe settings
+      # Strobe settings
         self.strobe_lights = {"red": False, "yellow": False, "green": False}
         self.strobe_sync = True  # Sync mode
         self.strobe_rate = 0.5  # Default strobe speed
         self.strobe_running = False
-        self.strobe_thread = None
+        self.strobe_threads = {"red": None, "yellow": None, "green": None}
     
     def red_on(self):
         GPIO.output(self.red_pin, GPIO.LOW)  # LOW means ON
