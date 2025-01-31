@@ -10,9 +10,10 @@ _cleanup_done = False
 def cleanup():
     global _cleanup_done
     if not _cleanup_done:
+        _cleanup_done = True  # Mark cleanup as done
         print("Cleaning up GPIO resources...")
         GPIO.cleanup()
-        _cleanup_done = True  # Mark cleanup as done
+        
 
 
 # Register the cleanup function with atexit
