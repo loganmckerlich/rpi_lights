@@ -33,7 +33,7 @@ if not st.session_state.get('tl'):
 #     st.session_state.aud = LiveAudioVisualizer()
 
 if __name__ == "__main__":
-    toggle, random, dance, game= st.tabs(['toggle','random','dance','game'])
+    toggle, random, dance, strobe= st.tabs(['toggle','random','dance','strobe'])
     with toggle:
         tr,ty,tg,_ = st.columns([1,1,1,5])
         with tr:
@@ -73,6 +73,22 @@ if __name__ == "__main__":
         #         st.session_state.aud.BEAT_THRESHOLD = BEAT_THRESHOLD
 
         # st.session_state.aud.main(placeholder)
+
+    with strobe:
+        def strobe_control_ui(st.session_state.tl ):
+            st.sidebar.header("Strobe Controls")
+            traffic_light.strobe_lights["red"] = st.sidebar.checkbox("Strobe Red", traffic_light.strobe_lights["red"])
+            traffic_light.strobe_lights["yellow"] = st.sidebar.checkbox("Strobe Yellow", traffic_light.strobe_lights["yellow"])
+            traffic_light.strobe_lights["green"] = st.sidebar.checkbox("Strobe Green", traffic_light.strobe_lights["green"])
+            traffic_light.strobe_sync = st.sidebar.toggle("Sync Strobe", traffic_light.strobe_sync)
+            traffic_light.strobe_rate = st.sidebar.slider("Strobe Speed", 0.1, 2.0, traffic_light.strobe_rate, 0.1)
+            
+            if st.sidebar.button("Start Strobe"):
+                traffic_light.start_strobe()
+            if st.sidebar.button("Stop Strobe"):
+                traffic_light.stop_strobe()
+
+        strobe_control_ui()
 
 
     light_box = st.container()    

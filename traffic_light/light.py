@@ -2,6 +2,9 @@ import RPi.GPIO as GPIO
 from PIL import Image, ImageDraw
 from io import BytesIO
 import random
+import time
+import threading
+import streamlit as st
 
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
@@ -20,6 +23,13 @@ class TrafficLight():
         
         # Turn all lights off initially
         self.all_off()
+        
+        # Strobe settings
+        self.strobe_lights = {"red": False, "yellow": False, "green": False}
+        self.strobe_sync = True  # Sync mode
+        self.strobe_rate = 0.5  # Default strobe speed
+        self.strobe_running = False
+        self.strobe_thread = None
     
     def red_on(self):
         GPIO.output(self.red_pin, GPIO.LOW)  # LOW means ON
@@ -88,6 +98,31 @@ class TrafficLight():
         self.green_off()
         self.red_off()
         self.yellow_off()
+
+    def start_strobe(self):
+        if self.strobe_running:
+            return
+        self.strobe_running = True
+        self.strobe_thread = threading.Thread(target=self._strobe_loop, daemon=True)
+        self.strobe_thread.start()
+    
+    def stop_strobe(self):
+        self.strobe_running = False
+        if self.strobe_thread:
+            self.strobe_thread.join()
+
+    def _strobe_loop(self):
+        while self.strobe_running:
+            if self.strobe_sync:
+                state = GPIO.LOW if random.choice([True, False]) else GPIO.HIGH
+                for color in self.strobe_lights:
+                    if self.strobe_lights[color]:
+                        GPIO.output(getattr(self, f"{color}_pin"), state)
+            else:
+                for color in self.strobe_lights:
+                    if self.strobe_lights[color]:
+                        GPIO.output(getattr(self, f"{color}_pin"), GPIO.LOW if random.choice([True, False]) else GPIO.HIGH)
+            time.sleep(self.strobe_rate)
 
     def virtual_light(self):
         width, height = 200, 400
