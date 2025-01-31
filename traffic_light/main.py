@@ -83,9 +83,9 @@ if __name__ == "__main__":
             st.session_state.tl.strobe_sync = st.toggle("Sync Strobe", st.session_state.tl.strobe_sync)
             st.session_state.tl.strobe_rate = st.slider("Strobe Speed", 0.1, 2.0, st.session_state.tl.strobe_rate, 0.1)
             
-            if st.sidebar.button("Start Strobe"):
+            if st.button("Start Strobe"):
                 st.session_state.tl.start_strobe()
-            if st.sidebar.button("Stop Strobe"):
+            if st.button("Stop Strobe"):
                 st.session_state.tl.stop_strobe()
 
         strobe_control_ui()
