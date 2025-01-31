@@ -22,14 +22,12 @@ class TrafficLight():
         self.all_off()
     
     def red_on(self):
-        # Control physical light via GPIO
-        GPIO.output(self.red_pin, GPIO.HIGH)
+        GPIO.output(self.red_pin, GPIO.LOW)  # LOW means ON
         self.red = True
         print("RED")
 
     def red_off(self):
-        # Control physical light via GPIO
-        GPIO.output(self.red_pin, GPIO.LOW)
+        GPIO.output(self.red_pin, GPIO.HIGH)  # HIGH means OFF
         self.red = False
 
     def red_toggle(self):
@@ -39,14 +37,12 @@ class TrafficLight():
             self.red_on()
 
     def yellow_on(self):
-        # Control physical light via GPIO
-        GPIO.output(self.yellow_pin, GPIO.HIGH)
+        GPIO.output(self.yellow_pin, GPIO.LOW)  # LOW means ON
         self.yellow = True
         print("YELLOW")
     
     def yellow_off(self):
-        # Control physical light via GPIO
-        GPIO.output(self.yellow_pin, GPIO.LOW)
+        GPIO.output(self.yellow_pin, GPIO.HIGH)  # HIGH means OFF
         self.yellow = False
 
     def yellow_toggle(self):
@@ -56,14 +52,12 @@ class TrafficLight():
             self.yellow_on()
 
     def green_on(self):
-        # Control physical light via GPIO
-        GPIO.output(self.green_pin, GPIO.HIGH)
+        GPIO.output(self.green_pin, GPIO.LOW)  # LOW means ON
         self.green = True
         print("GREEN")
 
     def green_off(self):
-        # Control physical light via GPIO
-        GPIO.output(self.green_pin, GPIO.LOW)
+        GPIO.output(self.green_pin, GPIO.HIGH)  # HIGH means OFF
         self.green = False
 
     def green_toggle(self):
@@ -74,60 +68,40 @@ class TrafficLight():
 
     def randomize(self, single=False):
         if single:
-            # Ensure only one light is on at a time
             light_choice = random.choice(["red", "yellow", "green"])
-
-            # Turn the chosen light on
+            self.all_off()
             if light_choice == "red":
-                self.yellow_off()
-                self.green_off()
                 self.red_on()
             elif light_choice == "yellow":
-                self.green_off()
-                self.red_off()
                 self.yellow_on()
             else:
-                self.yellow_off()
-                self.red_off()
                 self.green_on()
         else:
-            # Multiple lights can be on
             self.red = random.choice([True, False])
             self.yellow = random.choice([True, False])
             self.green = random.choice([True, False])
-
-            # Reflect changes on the physical lights
-            GPIO.output(self.red_pin, GPIO.HIGH if self.red else GPIO.LOW)
-            GPIO.output(self.yellow_pin, GPIO.HIGH if self.yellow else GPIO.LOW)
-            GPIO.output(self.green_pin, GPIO.HIGH if self.green else GPIO.LOW)
+            GPIO.output(self.red_pin, GPIO.LOW if self.red else GPIO.HIGH)
+            GPIO.output(self.yellow_pin, GPIO.LOW if self.yellow else GPIO.HIGH)
+            GPIO.output(self.green_pin, GPIO.LOW if self.green else GPIO.HIGH)
 
     def all_off(self):
-        # Turn off all lights (virtual + physical)
         self.green_off()
         self.red_off()
         self.yellow_off()
+        print("cleanup")
 
     def virtual_light(self):
-        # Generate virtual light image
         width, height = 200, 400
         image = Image.new("RGB", (width, height), "white")
         draw = ImageDraw.Draw(image)
-
-        # Draw the stoplight body
         draw.rectangle([50, 50, 150, 350], fill="black")
     
-        # Determine light colors based on arguments
         red_color = "red" if self.red else "white"
         yellow_color = "yellow" if self.yellow else "white"
         green_color = "green" if self.green else "white"
 
-        # Draw the red light
         draw.ellipse([70, 60, 130, 120], fill=red_color, outline="black")
-
-        # Draw the yellow light
         draw.ellipse([70, 160, 130, 220], fill=yellow_color, outline="black")
-
-        # Draw the green light
         draw.ellipse([70, 260, 130, 320], fill=green_color, outline="black")
 
         output = BytesIO()
