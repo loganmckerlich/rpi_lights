@@ -76,12 +76,12 @@ if __name__ == "__main__":
 
     with strobe:
         def strobe_control_ui():
-            st.sidebar.header("Strobe Controls")
-            st.session_state.tl.strobe_lights["red"] = st.sidebar.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
-            st.session_state.tl.strobe_lights["yellow"] = st.sidebar.checkbox("Strobe Yellow", st.session_state.tl.strobe_lights["yellow"])
-            st.session_state.tl.strobe_lights["green"] = st.sidebar.checkbox("Strobe Green", st.session_state.tl.strobe_lights["green"])
-            st.session_state.tl.strobe_sync = st.sidebar.toggle("Sync Strobe", st.session_state.tl.strobe_sync)
-            st.session_state.tl.strobe_rate = st.sidebar.slider("Strobe Speed", 0.1, 2.0, st.session_state.tl.strobe_rate, 0.1)
+            st.header("Strobe Controls")
+            st.session_state.tl.strobe_lights["red"] = st.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
+            st.session_state.tl.strobe_lights["yellow"] = st.checkbox("Strobe Yellow", st.session_state.tl.strobe_lights["yellow"])
+            st.session_state.tl.strobe_lights["green"] = st.checkbox("Strobe Green", st.session_state.tl.strobe_lights["green"])
+            st.session_state.tl.strobe_sync = st.toggle("Sync Strobe", st.session_state.tl.strobe_sync)
+            st.session_state.tl.strobe_rate = st.slider("Strobe Speed", 0.1, 2.0, st.session_state.tl.strobe_rate, 0.1)
             
             if st.sidebar.button("Start Strobe"):
                 st.session_state.tl.start_strobe()
