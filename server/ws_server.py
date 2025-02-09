@@ -58,8 +58,13 @@ def client_left(client, server):
     """ Handle client disconnect """
     print(f"Client disconnected: {client['address']}")
 
+
+with open("../config.yaml", 'r') as stream:
+    config = yaml.safe_load(stream)
+
+ip_address = config['rpi_ip']
 # Create WebSocket server on port 8765
-server = WebsocketServer(8765)
+server = WebsocketServer(host=ip_address, port=8765, loglevel=logging.INFO)
 
 # Register the event handlers
 server.set_fn_message_received(handle_client_message)
@@ -68,8 +73,6 @@ server.set_fn_client_left(client_left)
 
 # Start the WebSocket server
 
-with open("../config.yaml", 'r') as stream:
-    config = yaml.safe_load(stream)
 
-print(f"WebSocket server running on ws://{config['rpi_ip']}8765")
+print(f"WebSocket server running on ws://{ip_address}:8765")
 server.run_forever()
