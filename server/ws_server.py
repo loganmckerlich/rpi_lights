@@ -1,7 +1,9 @@
 import RPi.GPIO as GPIO
 import time
 from websocket_server import WebsocketServer
-import yaml
+import socket
+
+ip_address = socket.gethostbyname(socket.gethostname())
 
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
@@ -59,8 +61,6 @@ def client_left(client, server):
     print(f"Client disconnected: {client['address']}")
 
 
-with open("../config.yml", 'r') as stream:
-    config = yaml.safe_load(stream)
 
 ip_address = config['rpi_ip']
 # Create WebSocket server on port 8765

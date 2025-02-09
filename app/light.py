@@ -3,13 +3,6 @@ import websocket
 import threading
 from io import BytesIO
 from PIL import Image, ImageDraw
-import yaml
-
-with open("../config.yaml", 'r') as stream:
-    config = yaml.safe_load(stream)
-
-# WebSocket server address (use your Pi's IP or domain if using Cloudflare Tunnel)
-ws_address = "ws://"+config['rpi_ip']+":8765"
 
 class TrafficLight():
     def __init__(self, ws_address):
@@ -103,34 +96,3 @@ class TrafficLight():
         image.save(output, format="JPEG")
         output.seek(0)
         return output
-
-# Initialize TrafficLight object with WebSocket connection
-traffic_light = TrafficLight(ws_address)
-
-# Streamlit interface
-st.title("Traffic Light Control")
-
-# Show virtual traffic light (image)
-st.image(traffic_light.virtual_light(), caption="Virtual Traffic Light", use_column_width=True)
-
-# Control Buttons
-if st.button("Turn Red Light On"):
-    traffic_light.red_on()
-
-if st.button("Turn Red Light Off"):
-    traffic_light.red_off()
-
-if st.button("Turn Yellow Light On"):
-    traffic_light.yellow_on()
-
-if st.button("Turn Yellow Light Off"):
-    traffic_light.yellow_off()
-
-if st.button("Turn Green Light On"):
-    traffic_light.green_on()
-
-if st.button("Turn Green Light Off"):
-    traffic_light.green_off()
-
-if st.button("Turn All Lights Off"):
-    traffic_light.all_off()

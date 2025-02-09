@@ -3,7 +3,10 @@ from light import TrafficLight
 import streamlit as st
 
 # WebSocket server address (use your Pi's IP or domain if using Cloudflare Tunnel)
-ws_address = "ws://<raspberry-pi-ip>:8765"
+with open ('config.yml', 'r') as stream:
+    config = yaml.safe_load(stream)
+
+ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
 
 # import RPi.GPIO as GPIO
 # import atexit
