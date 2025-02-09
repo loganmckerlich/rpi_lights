@@ -8,7 +8,7 @@ with open ('config.yml', 'r') as stream:
     config = yaml.safe_load(stream)
 
 ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
-print(ws_address)
+# print(ws_address)
 
 # import RPi.GPIO as GPIO
 # import atexit

@@ -6,9 +6,9 @@ import socket
 
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
-red_pin = 17
-yellow_pin = 27
-green_pin = 22
+red_pin=26
+yellow_pin=20
+green_pin=21
 
 # Set up GPIO pins
 GPIO.setup(red_pin, GPIO.OUT)
@@ -28,22 +28,23 @@ def handle_client_message(client, server, message):
     # Define what to do based on the command received
     if message == "RED_ON":
         GPIO.output(red_pin, GPIO.LOW)  # Turn red ON
-        GPIO.output(yellow_pin, GPIO.HIGH)  # Turn yellow OFF
-        GPIO.output(green_pin, GPIO.HIGH)  # Turn green OFF
+
     elif message == "RED_OFF":
         GPIO.output(red_pin, GPIO.HIGH)  # Turn red OFF
+
     elif message == "YELLOW_ON":
         GPIO.output(yellow_pin, GPIO.LOW)  # Turn yellow ON
-        GPIO.output(red_pin, GPIO.HIGH)  # Turn red OFF
-        GPIO.output(green_pin, GPIO.HIGH)  # Turn green OFF
+
     elif message == "YELLOW_OFF":
         GPIO.output(yellow_pin, GPIO.HIGH)  # Turn yellow OFF
+
     elif message == "GREEN_ON":
         GPIO.output(green_pin, GPIO.LOW)  # Turn green ON
-        GPIO.output(red_pin, GPIO.HIGH)  # Turn red OFF
-        GPIO.output(yellow_pin, GPIO.HIGH)  # Turn yellow OFF
+
+
     elif message == "GREEN_OFF":
         GPIO.output(green_pin, GPIO.HIGH)  # Turn green OFF
+
     elif message == "ALL_OFF":
         GPIO.output(red_pin, GPIO.HIGH)  # Turn all OFF
         GPIO.output(yellow_pin, GPIO.HIGH)
