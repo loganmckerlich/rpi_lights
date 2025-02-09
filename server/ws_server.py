@@ -78,7 +78,7 @@ def get_ngrok_url():
         return None
 
 # Start the Ngrok tunnel in the background
-subprocess.Popen(["ngrok", "http", "8765"])
+subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 # Give Ngrok a moment to start the tunnel
 time.sleep(2)
