@@ -43,10 +43,28 @@ class TrafficLight():
 
     def send_command(self, command):
         """ Send command to the Raspberry Pi to control GPIO """
-        if self.ws and self.ws.sock.connected:
+        if self.ws and self.ws.sock and self.ws.sock.connected:
             self.ws.send(command)
         else:
-            st.write("Not connected to WebSocket server.")
+            print("Failed to send command, WebSocket not connected.")
+
+    def green_toggle(self):
+        if self.green:
+            self.green_off()
+        else:
+            self.green_on()
+
+    def yellow_toggle(self):
+        if self.yellow:
+            self.yellow_off()
+        else:
+            self.yellow_on()
+
+    def red_toggle(self):
+        if self.red:
+            self.red_off()
+        else:
+            self.red_on()
 
     # GPIO control methods
     def red_on(self):

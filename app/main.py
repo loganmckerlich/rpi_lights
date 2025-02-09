@@ -1,12 +1,14 @@
 from light import TrafficLight
 # from dance_simple import LiveAudioVisualizer
 import streamlit as st
+import yaml
 
 # WebSocket server address (use your Pi's IP or domain if using Cloudflare Tunnel)
 with open ('config.yml', 'r') as stream:
     config = yaml.safe_load(stream)
 
 ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
+print(ws_address)
 
 # import RPi.GPIO as GPIO
 # import atexit
@@ -49,12 +51,13 @@ if __name__ == "__main__":
                 st.session_state.tl.green_toggle()
 
     with random:
-        ra, rb, _ = st.columns([1,1,2])
-        with ra:
-            single = st.toggle("Single")
-        with rb:
-            if st.button("Randomize"):
-                st.session_state.tl.randomize(single)
+        st.write('disabled')
+        # ra, rb, _ = st.columns([1,1,2])
+        # with ra:
+        #     single = st.toggle("Single")
+        # with rb:
+        #     if st.button("Randomize"):
+        #         st.session_state.tl.randomize(single)
 
     with dance:
         st.write("disabled")
@@ -77,20 +80,21 @@ if __name__ == "__main__":
         # st.session_state.aud.main(placeholder)
 
     with strobe:
-        def strobe_control_ui():
-            st.header("Strobe Controls")
-            st.session_state.tl.strobe_lights["red"] = st.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
-            st.session_state.tl.strobe_lights["yellow"] = st.checkbox("Strobe Yellow", st.session_state.tl.strobe_lights["yellow"])
-            st.session_state.tl.strobe_lights["green"] = st.checkbox("Strobe Green", st.session_state.tl.strobe_lights["green"])
-            st.session_state.tl.strobe_sync = st.toggle("Sync Strobe", st.session_state.tl.strobe_sync)
-            st.session_state.tl.strobe_rate = st.slider("Strobe Speed", 0.1, 2.0, st.session_state.tl.strobe_rate, 0.1)
+        st.write("disabled")
+        # def strobe_control_ui():
+        #     st.header("Strobe Controls")
+        #     st.session_state.tl.strobe_lights["red"] = st.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
+        #     st.session_state.tl.strobe_lights["yellow"] = st.checkbox("Strobe Yellow", st.session_state.tl.strobe_lights["yellow"])
+        #     st.session_state.tl.strobe_lights["green"] = st.checkbox("Strobe Green", st.session_state.tl.strobe_lights["green"])
+        #     st.session_state.tl.strobe_sync = st.toggle("Sync Strobe", st.session_state.tl.strobe_sync)
+        #     st.session_state.tl.strobe_rate = st.slider("Strobe Speed", 0.1, 2.0, st.session_state.tl.strobe_rate, 0.1)
             
-            if st.button("Start Strobe"):
-                st.session_state.tl.start_strobe()
-            if st.button("Stop Strobe"):
-                st.session_state.tl.stop_strobe()
+        #     if st.button("Start Strobe"):
+        #         st.session_state.tl.start_strobe()
+        #     if st.button("Stop Strobe"):
+        #         st.session_state.tl.stop_strobe()
 
-        strobe_control_ui()
+        # strobe_control_ui()
 
 
     light_box = st.container()    
