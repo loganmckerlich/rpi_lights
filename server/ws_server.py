@@ -63,6 +63,20 @@ def client_left(client, server):
     """ Handle client disconnect """
     print(f"Client disconnected: {client['address']}")
 
+def get_ngrok_url():
+    """ Get the public Ngrok URL dynamically """
+    try:
+        # Make a request to the Ngrok API to get the public URL
+        ngrok_info = requests.get("http://localhost:4040/api/tunnels")
+        ngrok_info = ngrok_info.json()
+
+        # Extract the public URL from the Ngrok response
+        public_url = ngrok_info['tunnels'][0]['public_url']
+        return public_url
+    except Exception as e:
+        print(f"Error fetching Ngrok URL: {e}")
+        return None
+        
 # Start the Ngrok tunnel in the background
 subprocess.Popen(["ngrok", "http", "8765"])
 
@@ -76,7 +90,7 @@ if ngrok_url:
     print(f"WebSocket server running on {ngrok_url}")
 else:
     print("Failed to get Ngrok URL")
-    
+
 ip_address = "0.0.0.0" 
 
 # Create WebSocket server on port 8765
