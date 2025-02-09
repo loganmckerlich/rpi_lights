@@ -76,7 +76,7 @@ def get_ngrok_url():
     except Exception as e:
         print(f"Error fetching Ngrok URL: {e}")
         return None
-        
+
 # Start the Ngrok tunnel in the background
 subprocess.Popen(["ngrok", "http", "8765"])
 
@@ -85,6 +85,9 @@ time.sleep(2)
 
 # Get the public URL from Ngrok
 ngrok_url = get_ngrok_url()
+
+time.sleep(2)
+
 
 if ngrok_url:
     print(f"WebSocket server running on {ngrok_url}")
@@ -102,7 +105,4 @@ server.set_fn_new_client(new_client)
 server.set_fn_client_left(client_left)
 
 # Start the WebSocket server
-
-
-print(f"WebSocket server running on ws://{ip_address}:8765")
 server.run_forever()
