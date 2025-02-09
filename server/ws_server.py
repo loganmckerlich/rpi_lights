@@ -1,75 +1,75 @@
-import asyncio
-import websockets
 import RPi.GPIO as GPIO
+import time
+from websocket_server import WebsocketServer
+import yaml
 
-# Set up GPIO
+# Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
+red_pin = 17
+yellow_pin = 27
+green_pin = 22
 
-class TrafficLight():
-    def __init__(self, red_pin, yellow_pin, green_pin):
-        self.red_pin = red_pin
-        self.yellow_pin = yellow_pin
-        self.green_pin = green_pin
-        GPIO.setup(self.red_pin, GPIO.OUT)
-        GPIO.setup(self.yellow_pin, GPIO.OUT)
-        GPIO.setup(self.green_pin, GPIO.OUT)
-        self.all_off()
+# Set up GPIO pins
+GPIO.setup(red_pin, GPIO.OUT)
+GPIO.setup(yellow_pin, GPIO.OUT)
+GPIO.setup(green_pin, GPIO.OUT)
 
-    def red_on(self):
-        GPIO.output(self.red_pin, GPIO.LOW)
-        print("RED ON")
+# Initialize all pins to OFF
+GPIO.output(red_pin, GPIO.HIGH)
+GPIO.output(yellow_pin, GPIO.HIGH)
+GPIO.output(green_pin, GPIO.HIGH)
 
-    def red_off(self):
-        GPIO.output(self.red_pin, GPIO.HIGH)
-        print("RED OFF")
-
-    def yellow_on(self):
-        GPIO.output(self.yellow_pin, GPIO.LOW)
-        print("YELLOW ON")
-    
-    def yellow_off(self):
-        GPIO.output(self.yellow_pin, GPIO.HIGH)
-        print("YELLOW OFF")
-
-    def green_on(self):
-        GPIO.output(self.green_pin, GPIO.LOW)
-        print("GREEN ON")
-
-    def green_off(self):
-        GPIO.output(self.green_pin, GPIO.HIGH)
-        print("GREEN OFF")
-
-    def all_off(self):
-        self.red_off()
-        self.yellow_off()
-        self.green_off()
-
-# Initialize traffic light object
-traffic_light = TrafficLight(red_pin=17, yellow_pin=27, green_pin=22)
-
-async def handler(websocket, path):
-    message = await websocket.recv()
+# WebSocket commands to control traffic lights
+def handle_client_message(client, server, message):
+    """ Handle incoming WebSocket messages from client """
     print(f"Received message: {message}")
 
-    # Handle different messages to control the GPIO
+    # Define what to do based on the command received
     if message == "RED_ON":
-        traffic_light.red_on()
+        GPIO.output(red_pin, GPIO.LOW)  # Turn red ON
+        GPIO.output(yellow_pin, GPIO.HIGH)  # Turn yellow OFF
+        GPIO.output(green_pin, GPIO.HIGH)  # Turn green OFF
     elif message == "RED_OFF":
-        traffic_light.red_off()
+        GPIO.output(red_pin, GPIO.HIGH)  # Turn red OFF
     elif message == "YELLOW_ON":
-        traffic_light.yellow_on()
+        GPIO.output(yellow_pin, GPIO.LOW)  # Turn yellow ON
+        GPIO.output(red_pin, GPIO.HIGH)  # Turn red OFF
+        GPIO.output(green_pin, GPIO.HIGH)  # Turn green OFF
     elif message == "YELLOW_OFF":
-        traffic_light.yellow_off()
+        GPIO.output(yellow_pin, GPIO.HIGH)  # Turn yellow OFF
     elif message == "GREEN_ON":
-        traffic_light.green_on()
+        GPIO.output(green_pin, GPIO.LOW)  # Turn green ON
+        GPIO.output(red_pin, GPIO.HIGH)  # Turn red OFF
+        GPIO.output(yellow_pin, GPIO.HIGH)  # Turn yellow OFF
     elif message == "GREEN_OFF":
-        traffic_light.green_off()
+        GPIO.output(green_pin, GPIO.HIGH)  # Turn green OFF
     elif message == "ALL_OFF":
-        traffic_light.all_off()
+        GPIO.output(red_pin, GPIO.HIGH)  # Turn all OFF
+        GPIO.output(yellow_pin, GPIO.HIGH)
+        GPIO.output(green_pin, GPIO.HIGH)
     else:
-        await websocket.send(f"Unknown command: {message}")
+        print(f"Unknown command: {message}")
 
-start_server = websockets.serve(handler, "0.0.0.0", 8765)
+def new_client(client, server):
+    """ Handle new client connection """
+    print(f"New client connected: {client['address']}")
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+def client_left(client, server):
+    """ Handle client disconnect """
+    print(f"Client disconnected: {client['address']}")
+
+# Create WebSocket server on port 8765
+server = WebsocketServer(8765, host='0.0.0.0')
+
+# Register the event handlers
+server.set_fn_message_received(handle_client_message)
+server.set_fn_new_client(new_client)
+server.set_fn_client_left(client_left)
+
+# Start the WebSocket server
+
+with open("../config.yaml", 'r') as stream:
+    config = yaml.safe_load(stream)
+    
+print(f"WebSocket server running on ws://{config['rpi_ip']}8765")
+server.run_forever()
