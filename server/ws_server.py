@@ -2,6 +2,9 @@ import RPi.GPIO as GPIO
 import time
 from websocket_server import WebsocketServer
 import socket
+import subprocess
+import requests
+import json
 
 
 # Set up GPIO (same as your original code)
@@ -60,8 +63,20 @@ def client_left(client, server):
     """ Handle client disconnect """
     print(f"Client disconnected: {client['address']}")
 
-# ip_address = socket.gethostbyname(socket.gethostname())
+# Start the Ngrok tunnel in the background
+subprocess.Popen(["ngrok", "http", "8765"])
 
+# Give Ngrok a moment to start the tunnel
+time.sleep(2)
+
+# Get the public URL from Ngrok
+ngrok_url = get_ngrok_url()
+
+if ngrok_url:
+    print(f"WebSocket server running on {ngrok_url}")
+else:
+    print("Failed to get Ngrok URL")
+    
 ip_address = "0.0.0.0" 
 
 # Create WebSocket server on port 8765

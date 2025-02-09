@@ -2,26 +2,10 @@ from light import TrafficLight
 # from dance_simple import LiveAudioVisualizer
 import streamlit as st
 import yaml
-
-# WebSocket server address (use your Pi's IP or domain if using Cloudflare Tunnel)
+import time
 with open ('config.yml', 'r') as stream:
     config = yaml.safe_load(stream)
 
-ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
-# print(ws_address)
-
-# import RPi.GPIO as GPIO
-# import atexit
-# _cleanup_done = False
-
-# def cleanup():
-#     global _cleanup_done
-#     if not _cleanup_done:
-#         _cleanup_done = True  # Mark cleanup as done
-#         print("Cleaning up GPIO resources...")
-#         GPIO.cleanup()
-# # Register the cleanup function with atexit
-# atexit.register(cleanup)
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
@@ -29,6 +13,26 @@ st.set_page_config(
     layout="centered",                     # Choose layout: "centered" or "wide"
     initial_sidebar_state="collapsed"      # Sidebar: "auto", "expanded", or "collapsed"
 )
+
+if not st.session_state.get("approved"):
+    if st.session_state.get('pw') != config['pw']:
+        with st.form(key='pw'):
+            st.text_input("enter password",type="password",key='pw')
+            if st.form_submit_button("submit"):
+                if st.session_state['pw'] != config['pw']:
+                    st.error("Wrongo Bongo")
+                    st.stop()
+            else:
+                st.stop()
+
+st.session_state["approved"] = True
+
+
+
+
+
+# ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
+ws_address = "wss://af3b-24-35-90-79.ngrok-free.app"
 
 if not st.session_state.get('tl'):
     st.session_state.tl = TrafficLight(ws_address)
@@ -51,16 +55,15 @@ if __name__ == "__main__":
                 st.session_state.tl.green_toggle()
 
     with random:
-        st.write('disabled')
+        st.warning(icon = ':construction_worker:' , body = 'disabled')
         # ra, rb, _ = st.columns([1,1,2])
         # with ra:
         #     single = st.toggle("Single")
         # with rb:
         #     if st.button("Randomize"):
         #         st.session_state.tl.randomize(single)
-
     with dance:
-        st.write("disabled")
+        st.warning(icon = ':construction_worker:' , body = 'disabled')
         # if st.button("Start/Stop"):
         #     st.session_state.aud.toggle()
         # st.text(st.session_state.aud.BPM_EST)
@@ -80,7 +83,7 @@ if __name__ == "__main__":
         # st.session_state.aud.main(placeholder)
 
     with strobe:
-        st.write("disabled")
+        st.warning(icon = ':construction_worker:' , body = 'disabled')
         # def strobe_control_ui():
         #     st.header("Strobe Controls")
         #     st.session_state.tl.strobe_lights["red"] = st.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
