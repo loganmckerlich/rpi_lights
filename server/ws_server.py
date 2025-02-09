@@ -61,8 +61,6 @@ def client_left(client, server):
     print(f"Client disconnected: {client['address']}")
 
 
-
-ip_address = config['rpi_ip']
 # Create WebSocket server on port 8765
 server = WebsocketServer(host=ip_address, port=8765)
 
