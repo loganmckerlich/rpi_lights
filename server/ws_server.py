@@ -3,7 +3,6 @@ import time
 from websocket_server import WebsocketServer
 import socket
 
-ip_address = socket.gethostbyname(socket.gethostname())
 
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
@@ -60,6 +59,9 @@ def client_left(client, server):
     """ Handle client disconnect """
     print(f"Client disconnected: {client['address']}")
 
+# ip_address = socket.gethostbyname(socket.gethostname())
+
+ip_address = "0.0.0.0" 
 
 # Create WebSocket server on port 8765
 server = WebsocketServer(host=ip_address, port=8765)
