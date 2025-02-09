@@ -1,23 +1,22 @@
 from light import TrafficLight
 # from dance_simple import LiveAudioVisualizer
 import streamlit as st
-import RPi.GPIO as GPIO
 
-import atexit
+# WebSocket server address (use your Pi's IP or domain if using Cloudflare Tunnel)
+ws_address = "ws://<raspberry-pi-ip>:8765"
 
-_cleanup_done = False
+# import RPi.GPIO as GPIO
+# import atexit
+# _cleanup_done = False
 
-def cleanup():
-    global _cleanup_done
-    if not _cleanup_done:
-        _cleanup_done = True  # Mark cleanup as done
-        print("Cleaning up GPIO resources...")
-        GPIO.cleanup()
-        
-
-
-# Register the cleanup function with atexit
-atexit.register(cleanup)
+# def cleanup():
+#     global _cleanup_done
+#     if not _cleanup_done:
+#         _cleanup_done = True  # Mark cleanup as done
+#         print("Cleaning up GPIO resources...")
+#         GPIO.cleanup()
+# # Register the cleanup function with atexit
+# atexit.register(cleanup)
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
@@ -27,7 +26,7 @@ st.set_page_config(
 )
 
 if not st.session_state.get('tl'):
-    st.session_state.tl = TrafficLight(red_pin=26, yellow_pin=20, green_pin=21)
+    st.session_state.tl = TrafficLight(ws_address)
 
 # if not st.session_state.get('aud'):
 #     st.session_state.aud = LiveAudioVisualizer()
@@ -93,7 +92,8 @@ if __name__ == "__main__":
 
     light_box = st.container()    
     if st.button("Reset"):
-        st.session_state.tl = TrafficLight(red_pin=26, yellow_pin=20, green_pin=21)
+        st.session_state.tl = TrafficLight(ws_address)
+        #red_pin=26, yellow_pin=20, green_pin=21
     
     with light_box:
         st.image(st.session_state.tl.virtual_light())
