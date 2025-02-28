@@ -28,9 +28,6 @@ if not st.session_state.get("approved"):
 st.session_state["approved"] = True
 
 
-
-
-
 ws_address = config["wss"]
 
 if not st.session_state.get('tl'):

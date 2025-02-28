@@ -3,15 +3,15 @@ import websocket
 import threading
 from io import BytesIO
 from PIL import Image, ImageDraw
+import time
 
 class TrafficLight():
     def __init__(self, ws_address):
         self.ws_address = ws_address
         self.ws = None
-        self.red = False
-        self.yellow = False
-        self.green = False
         self.connect_ws()
+        time.sleep(0.5)
+        self.all_off()
 
     def connect_ws(self):
         """ Connect to the WebSocket server on Raspberry Pi """
