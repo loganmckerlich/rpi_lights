@@ -31,9 +31,7 @@ st.session_state["approved"] = True
 
 
 
-# ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
-ws_address = "wss://af3b-24-35-90-79.ngrok-free.app"
-ws_address = "wss://92e6-24-35-90-79.ngrok-free.app"
+ws_address = config["wss"]
 
 if not st.session_state.get('tl'):
     st.session_state.tl = TrafficLight(ws_address)

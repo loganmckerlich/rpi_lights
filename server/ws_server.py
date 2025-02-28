@@ -5,6 +5,9 @@ import socket
 import subprocess
 import requests
 import json
+import warnings
+
+warnings.filterwarnings("ignore", message="channel is already in use")
 
 
 # Set up GPIO (same as your original code)
