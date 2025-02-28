@@ -5,8 +5,16 @@ import socket
 import subprocess
 import requests
 import json
-GPIO.setwarnings(False)
+import time
+import atexit
 
+def cleanup_gpio():
+    GPIO.cleanup()
+    print("GPIO cleaned up.")
+
+atexit.register(cleanup_gpio)
+GPIO.setwarnings(False)
+time.sleep(1)
 
 
 # Set up GPIO (same as your original code)
