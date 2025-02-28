@@ -33,6 +33,7 @@ st.session_state["approved"] = True
 
 # ws_address = "ws://"+config['rpi_ip']+":"+str(config['rpi_port'])
 ws_address = "wss://af3b-24-35-90-79.ngrok-free.app"
+ws_address = "wss://92e6-24-35-90-79.ngrok-free.app"
 
 if not st.session_state.get('tl'):
     st.session_state.tl = TrafficLight(ws_address)
@@ -55,7 +56,8 @@ if __name__ == "__main__":
                 st.session_state.tl.green_toggle()
 
     with random:
-        st.warning(icon = ':construction_worker:' , body = 'disabled')
+        # st.warning(icon = ':construction_worker:' , body = 'disabled')
+        st.warning(body = 'disabled')
         # ra, rb, _ = st.columns([1,1,2])
         # with ra:
         #     single = st.toggle("Single")
@@ -63,7 +65,7 @@ if __name__ == "__main__":
         #     if st.button("Randomize"):
         #         st.session_state.tl.randomize(single)
     with dance:
-        st.warning(icon = ':construction_worker:' , body = 'disabled')
+        st.warning(body = 'disabled')
         # if st.button("Start/Stop"):
         #     st.session_state.aud.toggle()
         # st.text(st.session_state.aud.BPM_EST)
@@ -83,7 +85,7 @@ if __name__ == "__main__":
         # st.session_state.aud.main(placeholder)
 
     with strobe:
-        st.warning(icon = ':construction_worker:' , body = 'disabled')
+        st.warning(body = 'disabled')
         # def strobe_control_ui():
         #     st.header("Strobe Controls")
         #     st.session_state.tl.strobe_lights["red"] = st.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
