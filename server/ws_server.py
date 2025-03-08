@@ -5,8 +5,12 @@ import socket
 import subprocess
 import requests
 import json
+import boto3
+import yaml
 
-
+with open ('config.yml', 'r') as stream:
+    config = yaml.safe_load(stream)
+    
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
 red_pin=26
@@ -76,6 +80,27 @@ def get_ngrok_url():
     except Exception as e:
         print(f"Error fetching Ngrok URL: {e}")
         return None
+
+ssm = boto3.client(
+    "ssm",
+    region_name=config["aws_region"]
+    aws_access_key=config["aws_access_key"]
+    aws_secret_access_key=config["aws_secret_key"]) 
+
+def to_aws(ngrok_url):
+    response = ssm.put_parameter(
+        Name='traffic-light/ngrok_url',
+        Value=ngrok_url,
+        Type="String",
+        Overwrite=True
+    )
+
+def connected_sequence():
+    pass
+
+def in_aws_sequence():
+    pass
+
 
 # Start the Ngrok tunnel in the background
 subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

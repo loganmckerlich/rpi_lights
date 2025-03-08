@@ -2,3 +2,5 @@
 config.yml
 venv
 notes.txt
+test.pyc
+*.ipynb
