@@ -3,7 +3,6 @@ name: Build and Push to ECR
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to main branch
       - aws
 
 jobs:
