@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 def flash(pin, n = 3):
     for i in range(n):
         GPIO.output(pin, GPIO.LOW)
-        time.sleep(0.5)
+        time.sleep(0.1)
         GPIO.output(pin, GPIO.HIGH)
 
 # this adds aws stuff to env
@@ -136,7 +136,7 @@ try:
     if ngrok_url:
         print(f"WebSocket server running on {ngrok_url}")
     else:
-        print("Ngrok tunnel not found, restarting...")
+        print("Ngrok tunnel not found...")
         ngrok_url = restart_ngrok()
 
     time.sleep(2)
