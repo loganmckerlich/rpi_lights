@@ -3,6 +3,7 @@ from light import TrafficLight
 import streamlit as st
 import yaml
 import time
+import boto3
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
@@ -11,9 +12,26 @@ st.set_page_config(
     initial_sidebar_state="collapsed"      # Sidebar: "auto", "expanded", or "collapsed"
 )
 
+if not st.session_state.get('ssm'):
+    try:
+        st.session_state.ssm = boto3.client(
+            "ssm",
+            region_name=st.secrets["aws_region"],
+            aws_access_key=st.secrets["aws_access_key"],
+            aws_secret_access_key=st.secrets["aws_secret_key"]) 
+    except:
+        pass
 
-# Test connection: Get an SSM parameter (if it exists)
 if not st.session_state.get("wss"):
+    try:
+        response = st.session_state.ssm.get_parameter(Name="/traffic-light/ngrok_url")
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            print("WSS address from SSM", response["Parameter"]["Value"])
+            st.session_state.wss = response["Parameter"]["Value"]
+        else:
+            print(f'SSM call failed - {response["ResponseMetadata"]["HTTPStatusCode"]}')
+    except st.session_state.ssm.exceptions.ParameterNotFound:
+        print("wss address not found in SSM.")
     st.session_state.wss=st.text_input(label = 'Optional WSS address')
     ws_address = None
 else:
