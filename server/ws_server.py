@@ -5,10 +5,6 @@ import socket
 import subprocess
 import requests
 import json
-import yaml
-
-with open ('config.yml', 'r') as stream:
-    config = yaml.safe_load(stream)
 
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
