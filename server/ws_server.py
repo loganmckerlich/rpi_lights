@@ -9,6 +9,19 @@ import boto3
 import os
 from dotenv import load_dotenv
 
+def flash(pin):
+    GPIO.output(pin, GPIO.LOW)
+    time.sleep(0.1)
+    GPIO.output(pin, GPIO.HIGH)
+    time.sleep(0.1)
+    GPIO.output(pin, GPIO.LOW)
+    time.sleep(0.1)
+    GPIO.output(pin, GPIO.HIGH)
+    time.sleep(0.1)
+    GPIO.output(pin, GPIO.LOW)
+    time.sleep(0.1)
+    GPIO.output(pin, GPIO.HIGH)
+
 # this adds aws stuff to env
 load_dotenv()
 
@@ -24,8 +37,7 @@ GPIO.setup(yellow_pin, GPIO.OUT)
 GPIO.setup(green_pin, GPIO.OUT)
 
 # Respond to plug in
-GPIO.output(green_pin, GPIO.LOW)
-time.sleep(3)
+flash(green_pin)
 # Initialize all pins to OFF
 GPIO.output(red_pin, GPIO.HIGH)
 GPIO.output(yellow_pin, GPIO.HIGH)
@@ -152,4 +164,7 @@ try:
     # Start the WebSocket server
     server.run_forever()
 except:
-    GPIO.output(green_pin, GPIO.LOW)
+    flash(red_pin)
+
+
+
