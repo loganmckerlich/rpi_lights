@@ -3,7 +3,6 @@ from light import TrafficLight
 import streamlit as st
 import yaml
 import time
-import boto3
 
 with open ('config.yml', 'r') as stream:
     config = yaml.safe_load(stream)
@@ -29,18 +28,10 @@ if not st.session_state.get("approved"):
 
 st.session_state["approved"] = True
 
-ssm = boto3.client("ssm")
 
 # Test connection: Get an SSM parameter (if it exists)
-try:
-    response = ssm.get_parameter(Name="/traffic-light/ngrok_url")
-    if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-        print("WSS address from SSM", response["Parameter"]["Value"])
-        ws_address = response["Parameter"]["Value"]
-    else:
-        print(f'SSM call failed - {response["ResponseMetadata"]["HTTPStatusCode"]}')
-except ssm.exceptions.ParameterNotFound:
-    print("wss address not found in SSM.")
+ws_address = config["wss"]
+
 
 if not st.session_state.get('tl'):
     st.session_state.tl = TrafficLight(ws_address)
