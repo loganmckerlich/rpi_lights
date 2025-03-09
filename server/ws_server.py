@@ -6,7 +6,10 @@ import subprocess
 import requests
 import json
 import boto3
+import os
 from dotenv import load_dotenv
+session = boto3.Session(region_name=os.getenv("AWS_REGION")) 
+
 
 # this adds aws stuff to env
 load_dotenv()
