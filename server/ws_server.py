@@ -30,7 +30,7 @@ green_pin=21
 GPIO.setup(red_pin, GPIO.OUT)
 GPIO.setup(yellow_pin, GPIO.OUT)
 GPIO.setup(green_pin, GPIO.OUT)
-time.sleep(1)
+time.sleep(0.1)
 
 # Respond to plug in
 flash(yellow_pin,3)
@@ -124,7 +124,6 @@ def powered_on():
     GPIO.output(yellow_pin, GPIO.HIGH)
     GPIO.output(green_pin, GPIO.HIGH)
 
-ngrok_url=None
 
 try:
     ssm = boto3.client("ssm") 
@@ -132,16 +131,15 @@ try:
     # Start the Ngrok tunnel in the background
     subprocess.Popen(["/usr/local/bin/ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     # Give Ngrok a moment to start the tunnel
-    time.sleep(5)
+    time.sleep(2)
 
+    ngrok_url=get_ngrok_url()
     # Get the public URL from Ngrok
     if ngrok_url:
         print(f"WebSocket server running on {ngrok_url}")
     else:
         print("Ngrok tunnel not found...")
         ngrok_url = restart_ngrok()
-
-    time.sleep(2)
 
     if ngrok_url:
         to_aws(ngrok_url)
