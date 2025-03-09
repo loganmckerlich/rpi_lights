@@ -78,8 +78,8 @@ def get_ngrok_url():
 
 ssm = boto3.client(
     "ssm",
-    region_name=config["aws_region"]
-    aws_access_key=config["aws_access_key"]
+    region_name=config["aws_region"],
+    aws_access_key=config["aws_access_key"],
     aws_secret_access_key=config["aws_secret_key"]) 
 
 def to_aws(ngrok_url):
