@@ -3,6 +3,8 @@ from light import TrafficLight
 import streamlit as st
 import yaml
 import time
+import boto3
+import os
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
@@ -11,15 +13,38 @@ st.set_page_config(
     initial_sidebar_state="collapsed"      # Sidebar: "auto", "expanded", or "collapsed"
 )
 
+for k,v in st.secrets.items():
+    os.environ[k] = v
 
-# Test connection: Get an SSM parameter (if it exists)
+
+if not st.session_state.get('ssm'):
+    try:
+        st.session_state.ssm = boto3.client("ssm") 
+        print('Connected to ssm')
+    except:
+        print("failed connect to ssm")
+        pass
+
 if not st.session_state.get("wss"):
-    st.session_state.wss=st.text_input(label = 'Optional WSS address')
+    try:
+        response = st.session_state.ssm.get_parameter(Name="/traffic-light/ngrok_url")
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            wss = response["Parameter"]["Value"].replace('https','wss')
+            print("WSS address from SSM", wss)
+            print("got wss from aws")
+            st.session_state.wss = wss
+            st.rerun()
+        else:
+            print(f'SSM call failed - {response["ResponseMetadata"]["HTTPStatusCode"]}')
+    except st.session_state.ssm.exceptions.ParameterNotFound:
+        print("wss address not found in SSM.")
     ws_address = None
 else:
     ws_address = st.session_state.get("wss")
 
-st.caption(ws_address)
+if st.session_state.get('wss'):
+    st.caption('Connected to Websocket Server through NGROK')
+
 
 if not st.session_state.get('tl') or (st.session_state.tl.ws_address == None and ws_address is not None):
     st.session_state.tl = TrafficLight(ws_address)

@@ -5,6 +5,12 @@ import socket
 import subprocess
 import requests
 import json
+import boto3
+import os
+from dotenv import load_dotenv
+
+# this adds aws stuff to env
+load_dotenv()
 
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
@@ -76,6 +82,20 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
+ssm = boto3.client("ssm") 
+
+def to_aws(ngrok_url):
+    response = ssm.put_parameter(
+        Name='/traffic-light/ngrok_url',
+        Value=ngrok_url,
+        Type="String",
+        Overwrite=True
+    )
+    if response["ResponseMetadata"]["HTTPStatusCode"]:
+        print("in AWS")
+    else:
+        print(f'Failed to send to AWS {response["ResponseMetadata"]["HTTPStatusCode"]}')
+
 def powered_on():
     GPIO.output(red_pin, GPIO.LOW)
     time.sleep(1)
@@ -104,6 +124,7 @@ time.sleep(2)
 
 if ngrok_url:
     print(f"WebSocket server running on {ngrok_url}")
+    to_aws(ngrok_url)
     powered_on()
 else:
     print("Failed to get Ngrok URL")
