@@ -76,6 +76,24 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
+ssm = boto3.client(
+    "ssm",
+    region_name=config["aws_region"]
+    aws_access_key=config["aws_access_key"]
+    aws_secret_access_key=config["aws_secret_key"]) 
+
+def to_aws(ngrok_url):
+    response = ssm.put_parameter(
+        Name='traffic-light/ngrok_url',
+        Value=ngrok_url,
+        Type="String",
+        Overwrite=True
+    )
+    if response["ResponseMetadata"]["HTTPStatusCode"]:
+        print("in AWS")
+    else:
+        print(f'Failed to send to AWS {response["ResponseMetadata"]["HTTPStatusCode"]}')
+
 def powered_on():
     GPIO.output(red_pin, GPIO.LOW)
     time.sleep(1)
@@ -104,6 +122,7 @@ time.sleep(2)
 
 if ngrok_url:
     print(f"WebSocket server running on {ngrok_url}")
+    to_aws(ngrok_url)
     powered_on()
 else:
     print("Failed to get Ngrok URL")

@@ -4,3 +4,4 @@ venv
 notes.txt
 test.pyc
 *.ipynb
+*.toml
