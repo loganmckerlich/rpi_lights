@@ -3,9 +3,6 @@ from light import TrafficLight
 import streamlit as st
 import yaml
 import time
-with open ('config.yml', 'r') as stream:
-    config = yaml.safe_load(stream)
-
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
@@ -14,23 +11,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"      # Sidebar: "auto", "expanded", or "collapsed"
 )
 
-if not st.session_state.get("approved"):
-    if st.session_state.get('pw') != config['pw']:
-        with st.form(key='pw'):
-            st.text_input("enter password",type="password",key='pw')
-            if st.form_submit_button("submit"):
-                if st.session_state['pw'] != config['pw']:
-                    st.error("Wrongo Bongo")
-                    st.stop()
-            else:
-                st.stop()
 
-st.session_state["approved"] = True
+# Test connection: Get an SSM parameter (if it exists)
+if not st.session_state.get("wss"):
+    st.session_state.wss=st.text_input(label = 'Optional WSS address')
+    ws_address = None
+else:
+    ws_address = st.session_state.get("wss")
 
+st.caption(ws_address)
 
-ws_address = config["wss"]
-
-if not st.session_state.get('tl'):
+if not st.session_state.get('tl') or (st.session_state.tl.ws_address == None and ws_address is not None):
     st.session_state.tl = TrafficLight(ws_address)
 
 # if not st.session_state.get('aud'):

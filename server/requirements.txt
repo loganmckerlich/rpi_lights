@@ -1,2 +1,3 @@
 websocket-server
 RPi.GPIO
+boto3

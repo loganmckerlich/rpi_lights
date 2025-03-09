@@ -6,7 +6,6 @@ import subprocess
 import requests
 import json
 
-
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
 red_pin=26
@@ -77,6 +76,20 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
+def powered_on():
+    GPIO.output(red_pin, GPIO.LOW)
+    time.sleep(1)
+    GPIO.output(yellow_pin, GPIO.LOW)
+    time.sleep(1)
+    GPIO.output(green_pin, GPIO.LOW)
+    time.sleep(1)
+
+    GPIO.output(red_pin, GPIO.HIGH)
+    GPIO.output(yellow_pin, GPIO.HIGH)
+    GPIO.output(green_pin, GPIO.HIGH)
+
+
+
 # Start the Ngrok tunnel in the background
 subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -91,6 +104,7 @@ time.sleep(2)
 
 if ngrok_url:
     print(f"WebSocket server running on {ngrok_url}")
+    powered_on()
 else:
     print("Failed to get Ngrok URL")
 
