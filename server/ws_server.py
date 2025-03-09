@@ -82,6 +82,13 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
+def restart_ngrok():
+    """ Restart the Ngrok tunnel if the URL is not valid """
+    print("Restarting Ngrok...")
+    subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(2)  # Wait for the new Ngrok process to start
+    return get_ngrok_url()
+
 ssm = boto3.client("ssm") 
 
 def to_aws(ngrok_url):
@@ -117,13 +124,15 @@ subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=su
 time.sleep(2)
 
 # Get the public URL from Ngrok
-ngrok_url = get_ngrok_url()
+if ngrok_url:
+    print(f"WebSocket server running on {ngrok_url}")
+else:
+    print("Ngrok tunnel not found, restarting...")
+    ngrok_url = restart_ngrok()
 
 time.sleep(2)
 
-
 if ngrok_url:
-    print(f"WebSocket server running on {ngrok_url}")
     to_aws(ngrok_url)
     powered_on()
 else:
