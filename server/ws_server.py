@@ -23,6 +23,9 @@ GPIO.setup(red_pin, GPIO.OUT)
 GPIO.setup(yellow_pin, GPIO.OUT)
 GPIO.setup(green_pin, GPIO.OUT)
 
+# Respond to plug in
+GPIO.output(red_pin, GPIO.HIGH)
+time.sleep(3)
 # Initialize all pins to OFF
 GPIO.output(red_pin, GPIO.HIGH)
 GPIO.output(yellow_pin, GPIO.HIGH)
