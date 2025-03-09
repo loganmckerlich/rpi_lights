@@ -8,8 +8,6 @@ import json
 import boto3
 import os
 from dotenv import load_dotenv
-session = boto3.Session(region_name=os.getenv("AWS_REGION")) 
-
 
 # this adds aws stuff to env
 load_dotenv()
@@ -84,11 +82,11 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
-ssm = session.client("ssm") 
+ssm = boto3.client("ssm") 
 
 def to_aws(ngrok_url):
     response = ssm.put_parameter(
-        Name='traffic-light/ngrok_url',
+        Name='/traffic-light/ngrok_url',
         Value=ngrok_url,
         Type="String",
         Overwrite=True
