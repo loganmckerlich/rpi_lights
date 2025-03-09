@@ -28,10 +28,10 @@ green_pin=21
 GPIO.setup(red_pin, GPIO.OUT)
 GPIO.setup(yellow_pin, GPIO.OUT)
 GPIO.setup(green_pin, GPIO.OUT)
+time.sleep(1)
 
 # Respond to plug in
 flash(yellow_pin,3)
-
 # Initialize all pins to OFF
 GPIO.output(red_pin, GPIO.HIGH)
 GPIO.output(yellow_pin, GPIO.HIGH)
@@ -122,6 +122,8 @@ def powered_on():
     GPIO.output(yellow_pin, GPIO.HIGH)
     GPIO.output(green_pin, GPIO.HIGH)
 
+ngrok_url=None
+
 try:
     ssm = boto3.client("ssm") 
 
@@ -147,6 +149,8 @@ try:
 
     ip_address = "0.0.0.0" 
 
+    flash(green_pin,3)
+
     # Create WebSocket server on port 8765
     server = WebsocketServer(host=ip_address, port=8765)
 
@@ -156,8 +160,6 @@ try:
     server.set_fn_client_left(client_left)
 
     # Start the WebSocket server
-    flash(green_pin,3)
-
     server.run_forever()
 except:
     flash(red_pin,3)
