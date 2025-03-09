@@ -2,3 +2,4 @@ streamlit
 pillow
 websocket-client
 pyyaml
+boto3
