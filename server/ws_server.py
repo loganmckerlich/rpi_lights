@@ -5,6 +5,7 @@ import socket
 import subprocess
 import requests
 import json
+import boto3
 
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
