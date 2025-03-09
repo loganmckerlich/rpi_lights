@@ -6,12 +6,11 @@ import subprocess
 import requests
 import json
 import boto3
-import yaml
+from dotenv import load_dotenv
 
+# this adds aws stuff to env
+load_dotenv()
 
-with open ('config.yml', 'r') as stream:
-    config = yaml.safe_load(stream)
-    
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
 red_pin=26
@@ -82,11 +81,7 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
-ssm = boto3.client(
-    "ssm",
-    region_name=config["aws_region"],
-    aws_access_key=config["aws_access_key"],
-    aws_secret_access_key=config["aws_secret_key"]) 
+ssm = boto3.client("ssm") 
 
 def to_aws(ngrok_url):
     response = ssm.put_parameter(
