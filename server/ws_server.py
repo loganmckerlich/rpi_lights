@@ -24,7 +24,7 @@ GPIO.setup(yellow_pin, GPIO.OUT)
 GPIO.setup(green_pin, GPIO.OUT)
 
 # Respond to plug in
-GPIO.output(red_pin, GPIO.HIGH)
+GPIO.output(green_pin, GPIO.LOW)
 time.sleep(3)
 # Initialize all pins to OFF
 GPIO.output(red_pin, GPIO.HIGH)
@@ -88,11 +88,9 @@ def get_ngrok_url():
 def restart_ngrok():
     """ Restart the Ngrok tunnel if the URL is not valid """
     print("Restarting Ngrok...")
-    subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.Popen(["/usr/local/bin/ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     time.sleep(2)  # Wait for the new Ngrok process to start
     return get_ngrok_url()
-
-ssm = boto3.client("ssm") 
 
 def to_aws(ngrok_url):
     response = ssm.put_parameter(
@@ -118,38 +116,40 @@ def powered_on():
     GPIO.output(yellow_pin, GPIO.HIGH)
     GPIO.output(green_pin, GPIO.HIGH)
 
+try:
+    ssm = boto3.client("ssm") 
 
+    # Start the Ngrok tunnel in the background
+    subprocess.Popen(["/usr/local/bin/ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Give Ngrok a moment to start the tunnel
+    time.sleep(5)
 
-# Start the Ngrok tunnel in the background
-subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Get the public URL from Ngrok
+    if ngrok_url:
+        print(f"WebSocket server running on {ngrok_url}")
+    else:
+        print("Ngrok tunnel not found, restarting...")
+        ngrok_url = restart_ngrok()
 
-# Give Ngrok a moment to start the tunnel
-time.sleep(2)
+    time.sleep(2)
 
-# Get the public URL from Ngrok
-if ngrok_url:
-    print(f"WebSocket server running on {ngrok_url}")
-else:
-    print("Ngrok tunnel not found, restarting...")
-    ngrok_url = restart_ngrok()
+    if ngrok_url:
+        to_aws(ngrok_url)
+        powered_on()
+    else:
+        print("Failed to get Ngrok URL")
 
-time.sleep(2)
+    ip_address = "0.0.0.0" 
 
-if ngrok_url:
-    to_aws(ngrok_url)
-    powered_on()
-else:
-    print("Failed to get Ngrok URL")
+    # Create WebSocket server on port 8765
+    server = WebsocketServer(host=ip_address, port=8765)
 
-ip_address = "0.0.0.0" 
+    # Register the event handlers
+    server.set_fn_message_received(handle_client_message)
+    server.set_fn_new_client(new_client)
+    server.set_fn_client_left(client_left)
 
-# Create WebSocket server on port 8765
-server = WebsocketServer(host=ip_address, port=8765)
-
-# Register the event handlers
-server.set_fn_message_received(handle_client_message)
-server.set_fn_new_client(new_client)
-server.set_fn_client_left(client_left)
-
-# Start the WebSocket server
-server.run_forever()
+    # Start the WebSocket server
+    server.run_forever()
+except:
+    GPIO.output(green_pin, GPIO.LOW)
