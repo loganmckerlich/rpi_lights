@@ -14,6 +14,7 @@ def flash(pin, n = 3):
         GPIO.output(pin, GPIO.LOW)
         time.sleep(0.1)
         GPIO.output(pin, GPIO.HIGH)
+        time.sleep(0.1)
 
 # this adds aws stuff to env
 load_dotenv()
@@ -112,11 +113,11 @@ def to_aws(ngrok_url):
 
 def powered_on():
     GPIO.output(red_pin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(0.3)
     GPIO.output(yellow_pin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(0.3)
     GPIO.output(green_pin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(0.4)
 
     GPIO.output(red_pin, GPIO.HIGH)
     GPIO.output(yellow_pin, GPIO.HIGH)
