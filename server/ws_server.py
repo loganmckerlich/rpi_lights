@@ -6,7 +6,12 @@ import subprocess
 import requests
 import json
 import boto3
+import yaml
 
+
+with open ('config.yml', 'r') as stream:
+    config = yaml.safe_load(stream)
+    
 # Set up GPIO (same as your original code)
 GPIO.setmode(GPIO.BCM)
 red_pin=26
