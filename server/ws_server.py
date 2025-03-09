@@ -84,7 +84,7 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
-ssm = boto3.client("ssm") 
+ssm = session.client("ssm") 
 
 def to_aws(ngrok_url):
     response = ssm.put_parameter(
