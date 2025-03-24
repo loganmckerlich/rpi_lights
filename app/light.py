@@ -9,7 +9,8 @@ class TrafficLight():
     def __init__(self, ws_address):
         self.ws_address = ws_address
         self.ws = None
-        self.connect_ws()
+        if self.ws_address is not None:
+            self.connect_ws()
         time.sleep(0.5)
         self.all_off()
 
