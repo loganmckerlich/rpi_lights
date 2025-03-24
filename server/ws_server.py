@@ -8,6 +8,14 @@ import json
 import boto3
 import os
 from dotenv import load_dotenv
+GPIO.setwarnings(False)
+
+def flash(pin, n = 3):
+    for i in range(n):
+        GPIO.output(pin, GPIO.LOW)
+        time.sleep(0.1)
+        GPIO.output(pin, GPIO.HIGH)
+        time.sleep(0.1)
 
 # this adds aws stuff to env
 load_dotenv()
@@ -22,7 +30,10 @@ green_pin=21
 GPIO.setup(red_pin, GPIO.OUT)
 GPIO.setup(yellow_pin, GPIO.OUT)
 GPIO.setup(green_pin, GPIO.OUT)
+time.sleep(0.1)
 
+# Respond to plug in
+flash(yellow_pin,3)
 # Initialize all pins to OFF
 GPIO.output(red_pin, GPIO.HIGH)
 GPIO.output(yellow_pin, GPIO.HIGH)
@@ -82,7 +93,12 @@ def get_ngrok_url():
         print(f"Error fetching Ngrok URL: {e}")
         return None
 
-ssm = boto3.client("ssm") 
+def restart_ngrok():
+    """ Restart the Ngrok tunnel if the URL is not valid """
+    print("Restarting Ngrok...")
+    subprocess.Popen(["/usr/local/bin/ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(2)  # Wait for the new Ngrok process to start
+    return get_ngrok_url()
 
 def to_aws(ngrok_url):
     response = ssm.put_parameter(
@@ -98,46 +114,55 @@ def to_aws(ngrok_url):
 
 def powered_on():
     GPIO.output(red_pin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(0.3)
     GPIO.output(yellow_pin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(0.3)
     GPIO.output(green_pin, GPIO.LOW)
-    time.sleep(1)
+    time.sleep(0.4)
 
     GPIO.output(red_pin, GPIO.HIGH)
     GPIO.output(yellow_pin, GPIO.HIGH)
     GPIO.output(green_pin, GPIO.HIGH)
 
 
+try:
+    ssm = boto3.client("ssm") 
 
-# Start the Ngrok tunnel in the background
-subprocess.Popen(["ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Start the Ngrok tunnel in the background
+    subprocess.Popen(["/usr/local/bin/ngrok", "http", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Give Ngrok a moment to start the tunnel
+    time.sleep(2)
 
-# Give Ngrok a moment to start the tunnel
-time.sleep(2)
+    ngrok_url=get_ngrok_url()
+    # Get the public URL from Ngrok
+    if ngrok_url:
+        print(f"WebSocket server running on {ngrok_url}")
+    else:
+        print("Ngrok tunnel not found...")
+        ngrok_url = restart_ngrok()
 
-# Get the public URL from Ngrok
-ngrok_url = get_ngrok_url()
+    if ngrok_url:
+        to_aws(ngrok_url)
+        powered_on()
+    else:
+        print("Failed to get Ngrok URL")
 
-time.sleep(2)
+    ip_address = "0.0.0.0" 
+
+    flash(green_pin,3)
+
+    # Create WebSocket server on port 8765
+    server = WebsocketServer(host=ip_address, port=8765)
+
+    # Register the event handlers
+    server.set_fn_message_received(handle_client_message)
+    server.set_fn_new_client(new_client)
+    server.set_fn_client_left(client_left)
+
+    # Start the WebSocket server
+    server.run_forever()
+except:
+    flash(red_pin,3)
 
 
-if ngrok_url:
-    print(f"WebSocket server running on {ngrok_url}")
-    to_aws(ngrok_url)
-    powered_on()
-else:
-    print("Failed to get Ngrok URL")
 
-ip_address = "0.0.0.0" 
-
-# Create WebSocket server on port 8765
-server = WebsocketServer(host=ip_address, port=8765)
-
-# Register the event handlers
-server.set_fn_message_received(handle_client_message)
-server.set_fn_new_client(new_client)
-server.set_fn_client_left(client_left)
-
-# Start the WebSocket server
-server.run_forever()

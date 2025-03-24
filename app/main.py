@@ -5,6 +5,8 @@ import yaml
 import time
 import boto3
 import os
+import random as rand
+from strobe import strobe_controller
 
 st.set_page_config(
     page_title="Logans Traffic Light",     # Page title shown in browser tab
@@ -13,19 +15,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed"      # Sidebar: "auto", "expanded", or "collapsed"
 )
 
-for k,v in st.secrets.items():
-    os.environ[k] = v
+def establish_ssm():
+    if not st.session_state.get('ssm'):
+        try:
+            st.session_state.ssm = boto3.client("ssm") 
+            print('Connected to ssm')
+        except:
+            print("failed connect to ssm")
 
-
-if not st.session_state.get('ssm'):
-    try:
-        st.session_state.ssm = boto3.client("ssm") 
-        print('Connected to ssm')
-    except:
-        print("failed connect to ssm")
-        pass
-
-if not st.session_state.get("wss"):
+def establish_wss():
     try:
         response = st.session_state.ssm.get_parameter(Name="/traffic-light/ngrok_url")
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
@@ -38,13 +36,35 @@ if not st.session_state.get("wss"):
             print(f'SSM call failed - {response["ResponseMetadata"]["HTTPStatusCode"]}')
     except st.session_state.ssm.exceptions.ParameterNotFound:
         print("wss address not found in SSM.")
-    ws_address = None
+
+# secrets to env
+for k,v in st.secrets.items():
+    os.environ[k] = v
+
+# sign in camoflauged as a random questino
+st.sidebar.text_input(
+    label = 'What is your fav color?',
+    type = 'password',
+    key = 'user_input'
+)
+
+if st.session_state.user_input == os.environ["pw"]:
+    connect = True
 else:
-    ws_address = st.session_state.get("wss")
+    connect = False
+    if len(st.session_state.get('user_input')) > 0:
+        st.sidebar.caption(f"your favorite color is {st.session_state.user_input}")
+
+if connect and not st.session_state.get("wss"):
+    establish_ssm()
+    establish_wss()
 
 if st.session_state.get('wss'):
-    st.caption('Connected to Websocket Server through NGROK')
+    st.caption('You know the forbidden color. Connected to Websocket Server through NGROK')
+else:
+    st.caption('Have fun playing with this stop light rendering')
 
+ws_address = st.session_state.get("wss")
 
 if not st.session_state.get('tl') or (st.session_state.tl.ws_address == None and ws_address is not None):
     st.session_state.tl = TrafficLight(ws_address)
@@ -67,14 +87,32 @@ if __name__ == "__main__":
                 st.session_state.tl.green_toggle()
 
     with random:
-        # st.warning(icon = ':construction_worker:' , body = 'disabled')
-        st.warning(body = 'disabled')
-        # ra, rb, _ = st.columns([1,1,2])
-        # with ra:
-        #     single = st.toggle("Single")
-        # with rb:
-        #     if st.button("Randomize"):
-        #         st.session_state.tl.randomize(single)
+        options = [
+            st.session_state.tl.red_on,
+            st.session_state.tl.yellow_on,
+            st.session_state.tl.green_on
+        ]
+
+
+        ra, rb, _ = st.columns([1,1,2])
+        with ra:
+            single = st.toggle("Single")
+        with rb:
+            if st.button("Randomize"):
+                st.session_state.tl.all_off()
+                time.sleep(0.1)
+                if single:
+                    st.caption('new')
+                    r = rand.randint(0,2)
+                    options[r]()
+                    
+                else:
+                    if rand.choice([True, False]):
+                        st.session_state.tl.red_on()
+                    if rand.choice([True, False]):
+                        st.session_state.tl.yellow_on()
+                    if rand.choice([True, False]):
+                        st.session_state.tl.green_on()
     with dance:
         st.warning(body = 'disabled')
         # if st.button("Start/Stop"):
@@ -97,26 +135,15 @@ if __name__ == "__main__":
 
     with strobe:
         st.warning(body = 'disabled')
-        # def strobe_control_ui():
-        #     st.header("Strobe Controls")
-        #     st.session_state.tl.strobe_lights["red"] = st.checkbox("Strobe Red", st.session_state.tl.strobe_lights["red"])
-        #     st.session_state.tl.strobe_lights["yellow"] = st.checkbox("Strobe Yellow", st.session_state.tl.strobe_lights["yellow"])
-        #     st.session_state.tl.strobe_lights["green"] = st.checkbox("Strobe Green", st.session_state.tl.strobe_lights["green"])
-        #     st.session_state.tl.strobe_sync = st.toggle("Sync Strobe", st.session_state.tl.strobe_sync)
-        #     st.session_state.tl.strobe_rate = st.slider("Strobe Speed", 0.1, 2.0, st.session_state.tl.strobe_rate, 0.1)
+        # strobe_controller() 
             
-        #     if st.button("Start Strobe"):
-        #         st.session_state.tl.start_strobe()
-        #     if st.button("Stop Strobe"):
-        #         st.session_state.tl.stop_strobe()
-
-        # strobe_control_ui()
-
+        
 
     light_box = st.container()    
     if st.button("Reset"):
-        st.session_state.tl = TrafficLight(ws_address)
-        #red_pin=26, yellow_pin=20, green_pin=21
+        with st.spinner('Reseting light'):
+            time.sleep(0.5)
+            st.session_state.tl = TrafficLight(ws_address)
     
     with light_box:
         st.image(st.session_state.tl.virtual_light())
